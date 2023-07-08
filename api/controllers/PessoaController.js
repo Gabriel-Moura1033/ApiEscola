@@ -81,6 +81,84 @@ class PessoaController {
             return res.status(500).json(error.message);
         }
     }
+
+    static async selecionaMatricula(req, res) {
+        const { estudanteId, matriculaId } = req.params
+
+        try {
+            const matricula = await database.Matriculas.findOne( 
+            { 
+                where: { 
+                    id: Number(matriculaId),
+                    estudante_id: Number(estudanteId)
+                } 
+            } 
+            )
+            return res.status(200).json(matricula);
+        } catch (error) {
+           return res.status(500).json(error.message);
+        }
+    } 
+
+    static async criaMatricula(req, res) {
+        const { estudanteId } = req.params
+        const   novaMatricula = { ...req.body, estudante_id: Number(estudanteId) }
+        try {
+            const  matriculaCriada = await database.Matriculas.create(novaMatricula)
+            return res.status(200).json(matriculaCriada);
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+    }
+
+    static async atualizaMatricula(req,res) {
+        const { estudanteId, matriculaId } = req.params
+        const novaInfo = req.body;
+
+        try {
+            await database.Matriculas.update(novaInfo, {
+                where: {
+                    id: Number(matriculaId),
+                    estudante_id: Number(estudanteId)
+                }
+            })
+
+            // o método update não retorna os dados atualizados, portanto é necessário 
+            // fazer a busca pelo ID para retornar para o Front/usuário.
+            const matriculaAtualizada = await database.Matriculas.findOne( 
+                { 
+                    where: {
+                        id: Number(matriculaId),
+                        estudante_id: Number(estudanteId)
+                    }
+                } 
+                )
+            
+            return res.status(200).json(matriculaAtualizada);
+
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+
+    }
+
+    static async deletaMatricula (req, res) {
+        const { estudanteId, matriculaId } = req.params
+
+        try {
+            await database.Matriculas.destroy( {
+                where: {
+                    id: Number(matriculaId),
+                    estudante_id: Number(estudanteId)
+                }
+            } )
+            return res.status(200).json({ mensagem: `A matrícula ${matriculaId} do estudante ${estudanteId} foi deletada com sucesso.` })
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+    }
+
+
 }
 
 module.exports = PessoaController;
