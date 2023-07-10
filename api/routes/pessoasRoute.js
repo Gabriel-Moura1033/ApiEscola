@@ -7,6 +7,7 @@ router
     .get('/pessoas', PessoaController.pegaTodasPessoas)
     .get('/pessoas/:id', PessoaController.selecionaPessoa)
     .post('/pessoas', PessoaController.criaPessoa)
+    .post('/pessoas/:id/restaura', PessoaController.restauraPessoa)
     .put('/pessoas/:id', PessoaController.atualizaPessoa)
     .delete('/pessoas/:id', PessoaController.deletePessoa)
     .get('/pessoas/:estudanteId/matriculas/:matriculaId', PessoaController.selecionaMatricula)
