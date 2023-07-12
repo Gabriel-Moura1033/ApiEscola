@@ -4,11 +4,6 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Pessoas extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       Pessoas.hasMany(models.Turmas, {
         foreignKey: 'docente_id'
@@ -19,14 +14,36 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Pessoas.init({
-    nome: DataTypes.STRING,
+    nome: {
+      type: DataTypes.STRING,
+      validate: {
+        validadora: function(dado) {
+          if (dado.length <= 3) throw new Error('O nome precisa ter mais de 3 caracteres')
+        }
+      }
+    },
     ativo: DataTypes.BOOLEAN,
-    email: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      validate: {
+        isEmail: {
+          args: true,
+          msg: 'O Email informado é inválido.'
+        },
+      } 
+    },
     role: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Pessoas',
-    paranoid: true
-  });
+    paranoid: true,
+    defaultScope: {
+      where: { ativo: true }
+    },
+    scopes: {
+      todos: { where: {} }
+    }
+  }
+  );
   return Pessoas;
 };
